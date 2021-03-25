@@ -3,10 +3,13 @@ const mongoose = require('mongoose')
 
 const momentSchema = new mongoose.Schema({
     image: {
-        type: String,
-        required: 'Image is required!'
+        type: String
     },
     title:  {
+        type: String,
+        required: 'Title is required!'
+    },
+    comment:{
         type: String,
         required: 'Title is required!'
     },

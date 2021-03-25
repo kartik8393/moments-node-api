@@ -11,5 +11,18 @@ module.exports.createImage = async (image, name) => {
         name
     );
     const image1 = await image.replace(uploadPath_del, "");
-    return name;
+    return image1;
+}
+
+module.exports.deleteImage = async (id) => {
+    const uploadPath = "./upload"
+    var delete_path = uploadPath +'/'+ id
+    console.log(delete_path);
+    try{
+        fs.unlinkSync(delete_path);
+    }
+    catch(error){
+        res.status(401).json();
+    };
+    
 }

@@ -12,4 +12,16 @@ router.get('/', function(req, res, next) {
   momentController.getAll(req,res)
 });
 
+router.put('/', function(req, res, next) {
+  momentController.update(req,res)
+});
+
+router.delete('/', function(req, res, next) {
+  momentController.delete(req,res)
+});
+
+router.delete('/image', function(req, res, next) {
+  momentController.deleteImage(req,res)
+});
+
 module.exports = router;

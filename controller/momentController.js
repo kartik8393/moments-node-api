@@ -2,8 +2,8 @@ const  { successResponse,errorResponse } = require('../helper/index');
 const { Moment } = require('../models/moments');
 const { User } = require('../models/users');
 var mongoose = require('mongoose');
-const { createImage } = require('../helper/globalFunctions')
-
+const { createImage ,deleteImage } = require('../helper/globalFunctions')
+const fs = require('fs');
 
 //ADD CENTER
 module.exports.newMoment = async(req,res)=>{
@@ -27,12 +27,13 @@ module.exports.newMoment = async(req,res)=>{
     }
     try {
 
-        let image_name=await createImage(req.body.image,req.body.title+Date.now())
+        let image_name=await createImage(req.body.image,req.body.title.replace(" ","")+Date.now())
         const moment = new Moment({
             image: image_name,
             title: req.body.title,
             tags: req.body.tags,
-            user: req.body.user
+            user: req.body.user,
+            comment:req.body.comment
         })
         savedMoment = await moment.save()
     } catch (error) {
@@ -53,8 +54,82 @@ module.exports.getAll = async (req, res) => {
         errorResponse(req, res, "Invalid User Id", 204)
         return;
     }
-    
 }
+
+function isBase64(str) {
+    if (str ==='' || str.trim() ===''){ return false; }
+    try {
+        return btoa(atob(str)) == str;
+    } catch (err) {
+        return false;
+    }
+}
+
+module.exports.update = async (req, res) => {
+    if (mongoose.Types.ObjectId.isValid(req.query.id)){
+        const moment=await Moment.findOne({
+            _id:req.query.id
+        })
+        if(!moment){
+            errorResponse(req, res, "Invalid Moment Id", 204)
+            return;
+        }
+        if(req.body.newImage!="" && req.body.newImage!=undefined){
+            let image_name=await createImage(req.body.newImage,req.body.title.replace(" ","")+Date.now())
+            moment.image=image_name
+        }
+        moment.tags=req.body.tags;
+        moment.title=req.body.title;
+        moment.comment=req.body.comment;
+        moment.save()
+        successResponse(req,res,moment);
+    }
+    else{
+        errorResponse(req, res, "Invalid Moment Id", 204)
+        return;
+    }
+}
+
+module.exports.deleteImage= async (req, res) => {
+    if (mongoose.Types.ObjectId.isValid(req.body.id)){
+        const moment=await Moment.findOne({
+            _id:req.body.id
+        })
+        if(!moment){
+            errorResponse(req, res, "Invalid Moment Id", 204)
+            return;
+        }
+        if(moment.image==req.query.name){
+            deleteImage(req.query.name)
+            moment.image=undefined;
+            moment.save()
+            successResponse(req,res,moment);
+        }
+        else{
+            errorResponse(req, res, "Delete unsuccessful", 204)
+            return;
+        }
+    }
+}
+
+module.exports.delete = async (req, res) => {
+    if (mongoose.Types.ObjectId.isValid(req.query.id)) {
+        const moment = await Moment.deleteOne({ _id: req.query.id })
+        if (!moment) {
+            errorResponse(req, res, "Invalid Moment Id", 204)
+            return;
+        }
+        else {
+            successResponse(req, res, moment);
+        }
+    }
+    else {
+        errorResponse(req, res, "Invalid Moment Id", 204)
+        return;
+    }
+}
+
+
 
 
 
