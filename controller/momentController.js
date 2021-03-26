@@ -56,6 +56,19 @@ module.exports.getAll = async (req, res) => {
     }
 }
 
+module.exports.getOne = async (req, res) => {
+    console.log(req.query.id)
+    if (mongoose.Types.ObjectId.isValid(req.query.id)){
+        
+        const moment=await Moment.findOne({_id:req.query.id})
+        successResponse(req,res,moment);
+    }
+    else{
+        errorResponse(req, res, "Invalid User Id", 204)
+        return;
+    }
+}
+
 function isBase64(str) {
     if (str ==='' || str.trim() ===''){ return false; }
     try {

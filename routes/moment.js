@@ -12,6 +12,10 @@ router.get('/', function(req, res, next) {
   momentController.getAll(req,res)
 });
 
+router.get('/get', function(req, res, next) {
+  momentController.getOne(req,res)
+});
+
 router.put('/', function(req, res, next) {
   momentController.update(req,res)
 });

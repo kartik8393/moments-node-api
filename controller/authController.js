@@ -55,6 +55,7 @@ module.exports.register = async (req, res) => {
             mobile: req.body.mobile,
             email: req.body.email,
             password: encryptedPassword,
+            city:req.body.city
         })
         savedUser = await user.save()
         console.log(savedUser)
